@@ -3,6 +3,7 @@ package by.gulis.library.controllers;
 import by.gulis.library.models.Book;
 import by.gulis.library.models.Person;
 import by.gulis.library.services.PeopleService;
+import by.gulis.library.util.PersonValidator;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,9 +19,11 @@ import java.util.List;
 public class PeopleController {
 
     private PeopleService peopleService;
+    private PersonValidator validator;
 
     @Autowired
-    public PeopleController(PeopleService peopleService) {
+    public PeopleController(PeopleService peopleService, PersonValidator validator) {
+        this.validator = validator;
         this.peopleService = peopleService;
     }
 
@@ -45,7 +48,7 @@ public class PeopleController {
 
     @PostMapping()
     public String create(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
-        //validator.validate(person,bindingResult);
+        validator.validate(person,bindingResult);
         if (bindingResult.hasErrors()) {
             return "/people/new";
         }
