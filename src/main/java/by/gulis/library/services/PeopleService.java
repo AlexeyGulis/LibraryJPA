@@ -64,4 +64,12 @@ public class PeopleService {
         return bookList;
     }
 
+    public Boolean findByFullName(String fullName){
+        if(peopleRepository.findByFullName(fullName).isEmpty()){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
 }
