@@ -1,6 +1,7 @@
 package by.gulis.library.services;
 
 import by.gulis.library.models.Book;
+import by.gulis.library.models.Person;
 import by.gulis.library.repositories.BooksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,8 +57,27 @@ public class BooksService {
     @Transactional
     public void update(int id, Book updatedBook) {
         updatedBook.setId(id);
+        updatedBook.setOwner(booksRepository.findById(id).get().getOwner());
+        updatedBook.setLastTimeTaken(booksRepository.findById(id).get().getLastTimeTaken());
         booksRepository.save(updatedBook);
     }
+
+    @Transactional
+    public void giveBook(int id, Person person){
+        Book book = booksRepository.findById(id).get();
+        book.setOwner(person);
+        book.setLastTimeTaken(new Date());
+        booksRepository.save(book);
+    }
+
+    @Transactional
+    public void takeBook(int id){
+        Book book = booksRepository.findById(id).get();
+        book.setLastTimeTaken(null);
+        book.setOwner(null);
+        booksRepository.save(book);
+    }
+
 
     @Transactional
     public void delete(int id) {

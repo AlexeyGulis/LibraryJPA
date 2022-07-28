@@ -7,13 +7,12 @@
 <body>
 <p th:text="${book.getName()} + ', ' + ${book.getAuthor()} + ', ' + ${book.getYearOfProduction()}">VALUE</p>
 
-<div th:with="expr_result = ${#lists.isEmpty(person)}">
+<div th:with="expr_result = ${#lists.isEmpty(owner)}">
     <div th:if="${expr_result}">
-        <form th:method="PATCH" th:action="@{/books/{id}/give(id=${book.getId()},owner=null,
-        name=${book.getName()},yearOfProduction=${book.getYearOfProduction()},author=${book.getAuthor()})}">
+        <form th:method="PATCH" th:action="@{/books/{id}/give(id=${book.getId()})}">
             <p>Эта книга свободна. Кому назначить её?</p>
             <label for="person_id">Выберите человека</label>
-            <select name="personId" id="person_id">
+            <select th:object="${person}" th:field="*{id}" id="person_id">
                 <option th:each="p : ${people}" th:value="${p.getId()}" th:text="${p.getFullName()}">
                 </option>
             </select>
@@ -21,9 +20,8 @@
         </form>
     </div>
     <div th:unless="${expr_result}">
-        <form th:method="PATCH" th:action="@{/books/{id}/take(id=${book.getId()},owner=null,
-        name=${book.getName()},yearOfProduction=${book.getYearOfProduction()},author=${book.getAuthor()})}">
-             <p th:text="'Книга сейчас у: ' + ${person.getFullName()} + ', ' + ${person.getDateOfBirth()}">VALUE</p>
+        <form th:method="PATCH" th:action="@{/books/{id}/take(id=${book.getId()})}">
+             <p th:text="'Книга сейчас у: ' + ${owner.getFullName()} + ', ' + ${owner.getDateOfBirth()}">VALUE</p>
              <input type="submit" value="Освободить"/>
         </form>
     </div>

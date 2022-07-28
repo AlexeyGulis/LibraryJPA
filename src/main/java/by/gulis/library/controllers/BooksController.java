@@ -11,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 
 @Controller
 @RequestMapping("/books")
@@ -38,12 +37,14 @@ public class BooksController {
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id, Model model) {
-
+    public String show(@PathVariable("id") int id, Model model, @ModelAttribute("person") Person person) {
         Book book = booksService.findOne(id);
         model.addAttribute("book", book);
-        model.addAttribute("person", book.getOwner());
-        model.addAttribute("people", peopleService.findAll());
+        if(book.getOwner() != null){
+            model.addAttribute("owner", book.getOwner());
+        }else{
+            model.addAttribute("people", peopleService.findAll());
+        }
         return "books/show";
     }
 
@@ -87,19 +88,14 @@ public class BooksController {
     }
 
     @PatchMapping("/{id}/give")
-    public String giveBook(@ModelAttribute("book") @Valid Book book,
-                          BindingResult bindingResult, @PathVariable("id") int id, @RequestParam("personId") Integer personId) {
-        book.setOwner(peopleService.findOne(personId));
-        book.setLastTimeTaken(new Date());
-        booksService.update(id, book);
+    public String giveBook(@PathVariable("id") int id, @ModelAttribute("person") Person person) {
+        booksService.giveBook(id, person);
         return "redirect:/books/{id}";
     }
 
     @PatchMapping("/{id}/take")
-    public String takeBook(@ModelAttribute("book") @Valid Book book,
-                           BindingResult bindingResult, @PathVariable("id") int id, @ModelAttribute("person") Person person) {
-        book.setLastTimeTaken(null);
-        booksService.update(id, book);
+    public String takeBook(@PathVariable("id") int id) {
+        booksService.takeBook(id);
         return "redirect:/books/{id}";
     }
 
